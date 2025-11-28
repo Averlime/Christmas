@@ -62,6 +62,14 @@
             }
         }
 
+         window.addEventListener("focus", () => {
+            if (unityReady) checkNfcFromUrl();
+        });
+
+        window.addEventListener("visibilitychange", () => {
+            if (!document.hidden && unityReady) checkNfcFromUrl();
+        });
+
         // === Konfigurace Unity WebGL build ===
         var buildUrl = "Build";
         var loaderUrl = buildUrl + "/Builds.loader.js";

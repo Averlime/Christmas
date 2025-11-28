@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>NFC Bridge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            background: #111;
+            color: #eee;
+            font-family: sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>NFC Detected...</h2>
+<p>Prenasim informaci do aplikace...</p>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const tag = params.get("tag");
+
+if (tag) {
+    console.log("Bridge got tag:", tag);
+    localStorage.setItem("pending_nfc", tag);
+}
+
+setTimeout(() => {
+    window.location.href = "index.html";
+}, 300);
+
+</script>
+
+</body>
+</html>

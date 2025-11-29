@@ -30,34 +30,53 @@
         var unityInstance; 
 
         async function startNfc() {
-        if (!("NDEFReader" in window)) {
-            console.error("Web NFC not supported");
-            return;
-        }
+            if (!("NDEFReader" in window)) {
+                console.error("Web NFC not supported");
+                return;
+            }
 
-        try {
-            const reader = new NDEFReader();
-            await reader.scan();
-            console.log("NFC scan started");
+            try {
+                const reader = new NDEFReader();
+                await reader.scan();
+                console.log("NFC scan started");
 
-            reader.onreading = event => {
-                let decoder = new TextDecoder();
-                let text = "";
+                reader.onreading = event => {
+                    let decoder = new TextDecoder();
+                    let text = "";
 
-                for (const record of event.message.records) {
-                    if (record.recordType === "text") {
-                        text = decoder.decode(record.data);
+                    for (const record of event.message.records) {
+                        if (record.recordType === "text") {
+                            text = decoder.decode(record.data);
+                        }
                     }
-                }
 
-                console.log("NFC read:", text);
-                sendNfcCommand(text);
-            };
+                    console.log("NFC read:", text);
+                    sendNfcCommand(text);
+                };
 
-        } catch (e) {
-            console.error("NFC ERROR:", e);
+            } catch (e) {
+                console.error("NFC ERROR:", e);
+            }
+        }      
+
+        // === INIT KEY HANDLING (unique per player) ===
+        function loadInitKey() {
+            const params = new URLSearchParams(window.location.search);
+            let init = params.get("init");
+
+            if (init) {
+                console.log("Init key from URL:", init);
+                localStorage.setItem("init_key", init);
+            } else {
+                init = localStorage.getItem("init_key");
+                console.log("Init key from localStorage:", init);
+            }
+
+            if (init && unityInstance) {
+                unityInstance.SendMessage("Receiver", "OnInitKey", init);
+            }
         }
-}
+
 
         function unityShowBanner(msg, type) {
             var warningBanner = document.querySelector("#unity-warning");
@@ -139,6 +158,7 @@
                 };
 
                 checkNfcFromUrl();
+                loadInitKey();
 
             }).catch((message) => {
                 alert(message);

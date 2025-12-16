@@ -26,6 +26,26 @@
     </div>
 
     <script>
+        let initSent = false;
+
+        function loadInitKey() {
+            if (initSent) { return; }
+
+            const params = new URLSearchParams(window.location.search);
+            let init = params.get("init");
+
+            if (init) {
+                localStorage.setItem("init_key", init);
+            } else {
+                init = localStorage.getItem("init_key");
+            }
+
+            if (init && unityInstance) {
+                unityInstance.SendMessage("Receiver", "OnInitKey", init);
+                initSent = true;
+            }
+        }
+
         window.addEventListener("load", function() {
             startNfc();
         });
@@ -142,6 +162,7 @@
                     unityInstance.SetFullscreen(1);
                 };
 
+                loadInitKey(); 
                 checkNfcFromUrl();
 
             }).catch((message) => {

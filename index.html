@@ -106,12 +106,12 @@
             }
         }
 
-        window.addEventListener("focus", () => {
-            if (unityInstance) checkNfcFromUrl();
+         window.addEventListener("focus", () => {
+            if (unityReady) checkNfcFromUrl();
         });
 
         window.addEventListener("visibilitychange", () => {
-            if (!document.hidden && unityInstance) checkNfcFromUrl();
+            if (!document.hidden && unityReady) checkNfcFromUrl();
         });
 
         // === Konfigurace Unity WebGL build ===

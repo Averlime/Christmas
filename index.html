@@ -27,7 +27,6 @@
 
     <script>
         let initSent = false;
-
         function loadInitKey() {
             if (initSent) { return; }
 
@@ -41,7 +40,7 @@
             }
 
             if (init && unityInstance) {
-                unityInstance.SendMessage("NFCReceiver", "OnInitKey", init);
+                unityInstance.SendMessage("Receiver", "OnInitKey", init);
                 initSent = true;
             }
         }
@@ -54,34 +53,33 @@
         var unityInstance; 
 
         async function startNfc() {
-        if (!("NDEFReader" in window)) {
-            console.error("Web NFC not supported");
-            return;
-        }
+            if (!("NDEFReader" in window)) {
+                console.error("Web NFC not supported");
+                return;
+            }
 
-        try {
-            const reader = new NDEFReader();
-            await reader.scan();
-            console.log("NFC scan started");
+            try {
+                const reader = new NDEFReader();
+                await reader.scan();
+                console.log("NFC scan started");
 
-            reader.onreading = event => {
-                let decoder = new TextDecoder();
-                let text = "";
+                reader.onreading = event => {
+                    let decoder = new TextDecoder();
+                    let text = "";
 
-                for (const record of event.message.records) {
-                    if (record.recordType === "text") {
-                        text = decoder.decode(record.data);
+                    for (const record of event.message.records) {
+                        if (record.recordType === "text") {
+                            text = decoder.decode(record.data);
+                        }
                     }
-                }
 
-                console.log("NFC read:", text);
-                sendNfcCommand(text);
-            };
-
-        } catch (e) {
-            console.error("NFC ERROR:", e);
+                    console.log("NFC read:", text);
+                    sendNfcCommand(text);
+                };
+            } catch (e) {
+                console.error("NFC ERROR:", e);
+            }
         }
-}
 
         function unityShowBanner(msg, type) {
             var warningBanner = document.querySelector("#unity-warning");
@@ -112,7 +110,7 @@
         function sendNfcCommand(cmd) {
             console.log("sendNfcCommand called with:", cmd);
             if (unityInstance) {
-                unityInstance.SendMessage('NFCReceiver', 'OnNfc', cmd);
+                unityInstance.SendMessage('Receiver', 'OnNfc', cmd);
             } else {
                 console.warn("Unity instance not ready yet!");
             }
@@ -126,7 +124,7 @@
             }
         }
 
-         window.addEventListener("focus", () => {
+        window.addEventListener("focus", () => {
             if (unityInstance) checkNfcFromUrl();
         });
 
@@ -162,7 +160,7 @@
                     unityInstance.SetFullscreen(1);
                 };
 
-                loadInitKey(); 
+                loadInitKey();  
                 checkNfcFromUrl();
 
             }).catch((message) => {
